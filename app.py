@@ -255,7 +255,7 @@ def render_results(content):
 # ===================================================================
 
 st.set_page_config(page_title="Chatbot Tư vấn Tuyển sinh", layout="wide")
-st.title("🤖 Chatbot Tư vấn Tuyển sinh (Phiên bản Hội thoại)")
+st.title("🤖 Chatbot Tư vấn Tuyển sinh cấp THPT tỉnh Tây Ninh")
 
 if st.button("Xóa toàn bộ lịch sử trò chuyện"):
     st.session_state.messages = []      
@@ -393,5 +393,6 @@ if prompt := st.chat_input("Nhập điểm số hoặc câu trả lời..."):
     # Tải lại trang sau mỗi lần xử lý input
 
     st.rerun()
+
 
 
