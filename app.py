@@ -43,28 +43,19 @@ def run_data_processing():
     lấy tên sheet thật, đọc và xử lý.
     """
     try:
-        # --- NẠP CREDENTIALS VÀ XÁC THỰC GSPREAD TRỰC TIẾP ---
-        if not hasattr(st, 'secrets') \
-           or "connections" not in st.secrets \
-           or "gsheets" not in st.secrets["connections"] \
-           or "service_account_info" not in st.secrets["connections"]["gsheets"]:
-             raise ValueError(
-                 "File secrets.toml không được tìm thấy, thiếu mục [connections.gsheets], "
-                 "hoặc thiếu khóa 'service_account_info'. Vui lòng kiểm tra lại file .streamlit/secrets.toml."
-             )
-             
-
-
-        # 4. Xác thực client gspread bằng credentials
-        print("Đang xác thực với Google Sheets...")
-        creds_json = json.loads(st.secrets["connections"]["gsheets"]["service_account_info"])
-        # Tạo credentials từ JSON
+        # Lấy chuỗi base64 từ secrets
+        b64_key = st.secrets["connections"]["gsheets"]["key_b64"]
+    
+        # Giải mã và parse JSON
+        key_json = json.loads(base64.b64decode(b64_key).decode("utf-8"))
+    
+        # Tạo credentials
         creds = Credentials.from_service_account_info(
-            creds_json,
+            key_json,
             scopes=["https://www.googleapis.com/auth/spreadsheets"]
         )
-
-        # Ủy quyền truy cập Google Sheets
+    
+        # Kết nối Google Sheets
         gc = gspread.authorize(creds)
         print("Xác thực thành công.")
         # --- KẾT THÚC XÁC THỰC GSPREAD ---
@@ -401,3 +392,4 @@ if prompt := st.chat_input("Nhập điểm số hoặc câu trả lời..."):
     # Tải lại trang sau mỗi lần xử lý input
 
     st.rerun()
+
