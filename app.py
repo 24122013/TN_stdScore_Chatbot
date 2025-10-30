@@ -53,16 +53,11 @@ def run_data_processing():
                  "hoặc thiếu khóa 'service_account_info'. Vui lòng kiểm tra lại file .streamlit/secrets.toml."
              )
              
-        SERVICE_ACCOUNT_FILE = "smart-portfolio-476703-j5-c2b2221f5053.json"
 
-        
-        # 3. Tạo Đối tượng Credentials từ dict
-        SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
-        creds = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+
         # 4. Xác thực client gspread bằng credentials
         print("Đang xác thực với Google Sheets...")
         creds_json = json.loads(st.secrets["connections"]["gsheets"]["service_account_info"])
-
         # Tạo credentials từ JSON
         creds = Credentials.from_service_account_info(
             creds_json,
@@ -404,4 +399,5 @@ if prompt := st.chat_input("Nhập điểm số hoặc câu trả lời..."):
         st.session_state.step = "start" 
         
     # Tải lại trang sau mỗi lần xử lý input
+
     st.rerun()
