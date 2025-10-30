@@ -7,7 +7,7 @@ import matplotlib.ticker as ticker
 from scipy.stats import linregress
 import numpy as np
 import openpyxl
-
+import base64
 # =============================================================================
 # BƯỚC 1: HÀM TẢI VÀ XỬ LÝ DỮ LIỆU
 # (Xử lý logic "cầu kì" của trường chuyên)
@@ -335,4 +335,5 @@ if "__main__" == __name__:
         diem_uu_tien=0.5,
         mon_chuyen="Toán",
         diem_mon_chuyen=9.0
+
     )
