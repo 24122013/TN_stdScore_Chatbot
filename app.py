@@ -8,6 +8,7 @@ import gspread
 from google.oauth2.service_account import Credentials
 import pandas as pd
 import json
+import base64
 
 # --- Cấu hình hằng số ---
 DATA_FILE = "admission_data_processed.csv"
@@ -392,4 +393,5 @@ if prompt := st.chat_input("Nhập điểm số hoặc câu trả lời..."):
     # Tải lại trang sau mỗi lần xử lý input
 
     st.rerun()
+
 
