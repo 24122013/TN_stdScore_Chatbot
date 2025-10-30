@@ -10,7 +10,6 @@ import openpyxl
 import base64
 # =============================================================================
 # BƯỚC 1: HÀM TẢI VÀ XỬ LÝ DỮ LIỆU
-# (Xử lý logic "cầu kì" của trường chuyên)
 # =============================================================================
 
 def process_data_from_sheets(all_dfs, output_filename="admission_data_processed.csv"):
@@ -21,8 +20,6 @@ def process_data_from_sheets(all_dfs, output_filename="admission_data_processed.
     if not all_dfs:
         print("Không có dữ liệu nào được truyền để xử lý.")
         return False
-
-    # Gộp tất cả dữ liệu
     master_df = pd.concat(all_dfs, ignore_index=True)
 
     # --- SỬA LỖI QUAN TRỌNG: CHUYỂN ĐỔI CHUỖI RỖNG THÀNH NaN ---
@@ -31,8 +28,6 @@ def process_data_from_sheets(all_dfs, output_filename="admission_data_processed.
     master_df['STT'] = master_df['STT'].replace(r'^\s*$', np.nan, regex=True)
     # --- KẾT THÚC SỬA LỖI ---
 
-    # --- Logic xử lý cấu trúc lồng (Giờ sẽ chạy đúng) ---
-    
     # 1. Tạo cột 'Trường Gốc'
     master_df['Trường Gốc'] = master_df['Tên trường'].where(master_df['STT'].notna())
     master_df['Trường Gốc'] = master_df['Trường Gốc'].ffill()
@@ -144,7 +139,7 @@ def calculate_admission_scores(diem_van, diem_toan, diem_anh, diem_tb_4nam, diem
 
 def get_trend_slope(school_history):
     """
-    Tính toán độ dốc (slope) của xu hướng điểm chuẩn dùng linear regression.
+    Tính toán độ dốc (slope) của xu hướng điểm chuẩn dùng thuật toán hồi quy tuyến tính tích hợp sẵn.
     """
     if len(school_history) < 2: return 0
     x = np.arange(len(school_history)); y = school_history['Điểm chuẩn'].values
@@ -257,7 +252,7 @@ def get_recommendations(data_file, diem_van, diem_toan, diem_anh, diem_tb_4nam, 
     df_ma_3 = df_results[df_results['Độ an toàn (Mã)'] == 3]
     
     # --- THAY ĐỔI LOGIC CHÍNH THEO YÊU CẦU ---
-    # Sắp xếp mỗi nhóm và lấy Top 5 (thay vì Top 3)
+    # Sắp xếp mỗi nhóm và lấy Top 5 
     df_ma_1 = df_ma_1.sort_values(by='Điểm chuẩn năm ngoái', ascending=False).head(5)
     df_ma_2 = df_ma_2.sort_values(by='Điểm chuẩn năm ngoái', ascending=False).head(5)
     df_ma_3 = df_ma_3.sort_values(by='Điểm chuẩn năm ngoái', ascending=False).head(5)
@@ -310,7 +305,7 @@ def main_chatbot_function(diem_van, diem_toan, diem_anh, diem_tb_4nam, diem_uu_t
     # in ra dạng bảng cho dễ đọc
     print(top_5_schools.to_markdown(index=False)) 
     
-    # 2. Lấy 5 tên Tên trường từ kết quả
+    # 2. Lấy 5 tên trường từ kết quả
     entities_to_plot = top_5_schools['Đối tượng'].tolist()
     
     # 3. Vẽ biểu đồ cho 5 trường này
@@ -335,5 +330,5 @@ if "__main__" == __name__:
         diem_uu_tien=0.5,
         mon_chuyen="Toán",
         diem_mon_chuyen=9.0
-
     )
+
