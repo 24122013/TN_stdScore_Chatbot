@@ -1,0 +1,9 @@
+streamlit
+streamlit_gsheets
+pandas
+numpy
+matplotlib
+scipy
+openpyxl
+gspread
+google.oauth2.service_account
