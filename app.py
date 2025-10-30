@@ -10,9 +10,7 @@ import pandas as pd
 import json
 import base64
 
-# --- Cấu hình hằng số ---
 DATA_FILE = "admission_data_processed.csv"
-# !!! THAY BẰNG TÊN GOOGLE SHEET CỦA BẠN
 GSHEET_NAME = "std_score_TayNinh_highschools" 
 
 MON_CHUYEN_LIST = ["Ngữ Văn", "Toán", "Vật Lý", "Hóa học", "Sinh học", "Tiếng Anh", "Tin học", "Lịch sử"]
@@ -35,7 +33,6 @@ def normalize_text(s):
 MON_CHUYEN_MAP = {normalize_text(m): m for m in MON_CHUYEN_LIST}
 NORMALIZED_MON_CHUYEN_LIST = MON_CHUYEN_MAP.keys()
 NORMALIZED_KHO_LIST = ["khong", "ko", "0"]
-
 
 @st.cache_data(ttl=3600) # Cache 1 giờ
 def run_data_processing():
@@ -61,19 +58,19 @@ def run_data_processing():
         print("Xác thực thành công.")
         # --- KẾT THÚC XÁC THỰC GSPREAD ---
 
-        # 5. Mở spreadsheet bằng client đã xác thực
+        # Mở spreadsheet bằng client đã xác thực
         print(f"Đang mở Google Sheet: '{GSHEET_NAME}'")
         spreadsheet = gc.open_by_url("https://docs.google.com/spreadsheets/d/12cEo7NO3mvH8zrhnharFGghiVgawNRNWrn1rxGCm2SE/edit?usp=sharing")
 
         print(f"Đã mở Google Sheet: '{GSHEET_NAME}'")
 
         all_dfs = []
-        # 6. Lấy danh sách worksheet object THẬT
+        # Lấy danh sách worksheet object THẬT
         worksheets = spreadsheet.worksheets()
         sheet_names = [sheet.title for sheet in worksheets] # Lấy tên thật từ title
         print(f"Đã tìm thấy các sheet (tên thật): {sheet_names}") 
 
-        # 7. Lặp qua các worksheet object đã lấy được
+        # Lặp qua các worksheet object đã lấy được
         for worksheet in worksheets:
             sheet_name = worksheet.title # Lấy tên thật
             
@@ -85,7 +82,7 @@ def run_data_processing():
 
             print(f"Đang đọc sheet: {sheet_name}")
 
-            # 8. Đọc dữ liệu trực tiếp từ worksheet object bằng gspread
+            # Đọc dữ liệu trực tiếp từ worksheet object bằng gspread
             all_data = worksheet.get_all_values()
             
             if len(all_data) <= 5:
@@ -99,7 +96,6 @@ def run_data_processing():
             
             # Tạo DataFrame
             df = pd.DataFrame(data_rows, columns=header)
-            
             year = year_match.group(1)
             df['Năm học'] = year
             all_dfs.append(df)
@@ -393,6 +389,7 @@ if prompt := st.chat_input("Nhập điểm số hoặc câu trả lời..."):
     # Tải lại trang sau mỗi lần xử lý input
 
     st.rerun()
+
 
 
 
