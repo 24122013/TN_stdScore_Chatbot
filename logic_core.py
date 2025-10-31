@@ -82,7 +82,7 @@ def plot_admission_trends(data_file, entities, filename='trend_plot.png'):
         data = pd.read_csv(data_file)
     except FileNotFoundError:
         return f"Lỗi: Không tìm thấy file dữ liệu {data_file}"
-        
+    all_years = sorted(data['Năm học'].unique())    
     plt.figure(figsize=(12, 7))
     filtered_data = data[data['Đối tượng'].isin(entities)]
     
@@ -95,7 +95,9 @@ def plot_admission_trends(data_file, entities, filename='trend_plot.png'):
     for entity_name in entities:
         entity_data = filtered_data[filtered_data['Đối tượng'] == entity_name]
         if not entity_data.empty:
-            plt.plot(entity_data['Năm học'], entity_data['Điểm chuẩn'], marker='o', label=entity_name)
+            entity_data_indexed = entity_data.set_index('Năm học')
+            entity_scores = entity_data_indexed['Điểm chuẩn'].reindex(all_years)
+            plt.plot(all_years, entity_scores, marker='o', label=entity_name)
 
     plt.xlabel('Năm học', fontsize=12)
     plt.ylabel('Điểm chuẩn', fontsize=12)
@@ -331,4 +333,5 @@ if "__main__" == __name__:
         mon_chuyen="Toán",
         diem_mon_chuyen=9.0
     )
+
 
