@@ -1,9 +1,9 @@
 import streamlit as st
-import logic_core as logic # Import file logic của bạn
+import logic_core as logic 
 import os
 import unicodedata 
-import re # Cần import re ở đây
-from streamlit_gsheets import GSheetsConnection # Import thư viện kết nối
+import re
+from streamlit_gsheets import GSheetsConnection 
 import gspread
 from google.oauth2.service_account import Credentials
 import pandas as pd
@@ -389,6 +389,7 @@ if prompt := st.chat_input("Nhập điểm số hoặc câu trả lời..."):
     # Tải lại trang sau mỗi lần xử lý input
 
     st.rerun()
+
 
 
 
