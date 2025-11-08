@@ -32,12 +32,12 @@ def process_data_from_sheets(all_dfs, output_filename="admission_data_processed.
     master_df['Trường Gốc'] = master_df['Tên trường'].where(master_df['STT'].notna())
     master_df['Trường Gốc'] = master_df['Trường Gốc'].ffill()
     
-    # 2. LỌC BỎ "LỚP NGUỒN" NGAY BÂY GIỜ
+    # 2. LỌC BỎ "LỚP NGUỒN" NGAY BÂY GIỜ (VÌ LỚP NGUỒN ĐÃ KHÔNG CÒN MỞ)
     #    Sử dụng cột 'Tên trường' GỐC (nơi 'Lớp nguồn' tồn tại)
     is_lop_nguon = master_df['Tên trường'] == 'Lớp nguồn'
     master_df = master_df[~is_lop_nguon].copy()
 
-    # 3. Tạo cột 'Đối tượng' (Entity) mới
+    # 3. Tạo cột 'Đối tượng' mới
     is_chuyen_subject = master_df['STT'].isna()
     
     # Mặc định 'Đối tượng' là 'Tên trường' (ví dụ: "THPT Tây Ninh")
@@ -62,11 +62,6 @@ def process_data_from_sheets(all_dfs, output_filename="admission_data_processed.
     # Lưu file đã xử lý (dùng làm cache)
     master_df.to_csv(output_filename, index=False)
     print(f"Dữ liệu Google Sheet đã được xử lý và lưu vào file '{output_filename}'")
-    
-    # In ra vài dòng đầu của file đã xử lý để kiểm tra
-    print("\n--- Dữ liệu đã xử lý (5 dòng đầu) ---")
-    print(master_df.head())
-    print("---------------------------------")
     
     return True
 
@@ -120,7 +115,7 @@ def plot_admission_trends(data_file, entities, filename='trend_plot.png'):
 
 def calculate_admission_scores(diem_van, diem_toan, diem_anh, diem_tb_4nam, diem_uu_tien, mon_chuyen=None, diem_mon_chuyen=None):
     """
-    (Yêu cầu 3) Tính điểm xét tuyển cho cả hệ thường và hệ chuyên.
+    Tính điểm xét tuyển cho cả hệ thường và hệ chuyên.
     """
     try:
         diem_thi_3mon = float(diem_van) + float(diem_toan) + float(diem_anh)
@@ -153,7 +148,7 @@ def get_trend_slope(school_history):
 
 def get_safety_level(diem_xet, diem_chuan_last_year, slope):
     """
-    (Yêu cầu 4 - ĐÃ CẬP NHẬT: Quay lại 4 vùng gốc)
+    Quay lại 4 vùng gốc
     """
     is_higher = diem_xet >= diem_chuan_last_year
     is_trending_down = slope < -0.1 
@@ -169,7 +164,7 @@ def get_safety_level(diem_xet, diem_chuan_last_year, slope):
 
 def get_recommendations(data_file, diem_van, diem_toan, diem_anh, diem_tb_4nam, diem_uu_tien, mon_chuyen=None, diem_mon_chuyen=None):
     """
-    (Yêu cầu 5 - ĐÃ CẬP NHẬT: Trả về 3 nhóm, mỗi nhóm 5 trường)
+    Trả về 3 nhóm, mỗi nhóm 5 trường
     """
     try:
         master_data = pd.read_csv(data_file)
@@ -283,7 +278,7 @@ def get_recommendations(data_file, diem_van, diem_toan, diem_anh, diem_tb_4nam, 
 
 def main_chatbot_function(diem_van, diem_toan, diem_anh, diem_tb_4nam, diem_uu_tien, mon_chuyen=None, diem_mon_chuyen=None):
     """
-    Hàm tổng hợp, mô phỏng luồng chạy của chatbot.
+    Tổng hợp, mô phỏng luồng chạy của chatbot.
     """
     DATA_FILE = "admission_data_processed.csv"
     
@@ -333,5 +328,6 @@ if "__main__" == __name__:
         mon_chuyen="Toán",
         diem_mon_chuyen=9.0
     )
+
 
 
