@@ -144,6 +144,19 @@ def is_valid_score(score_str, min_val=0.0, max_val=10.0):
     except ValueError:
         return False, None
 
+def validate_minimum_score(score_str, subject_name):
+    """
+    Kiểm tra xem điểm môn có <= 1 không.
+    Trả về: (is_valid, score, error_message)
+    """
+    try:
+        score = float(score_str)
+        if score < 1:
+            return False, None, f"Rất tiếc, điểm môn {subject_name} < 1. Bạn không đủ điều kiện để tư vấn tuyển sinh"
+        return True, score, None
+    except ValueError:
+        return True, None, None
+
 def add_assistant_message(content):
     """
     Thêm tin nhắn VĂN BẢN của bot vào lịch sử chat và hiển thị.
@@ -314,16 +327,46 @@ if prompt := st.chat_input("Nhập điểm số hoặc câu trả lời..."):
     
     # Bước 1-4: Hỏi điểm
     if current_step in ["ask_van", "ask_toan", "ask_anh", "ask_tb_4nam"]:
+        # Kiểm tra điểm có hợp lệ không (0-10)
         is_valid, score = is_valid_score(prompt)
-        if is_valid:
-            score_key = current_step[4:] 
-            st.session_state.user_scores[score_key] = score
-            next_step, question = get_next_question()
-            st.session_state.step = next_step
-            add_assistant_message(question)
-        else:
+        if not is_valid:
             add_assistant_message("Điểm không hợp lệ. Vui lòng nhập một số từ 0 đến 10.")
-
+        else:
+            # Kiểm tra điểm tối thiểu cho 3 môn chính
+            score_key = current_step[4:]
+            if score_key in ["van", "toan", "anh"]:
+                # Xác định tên môn để hiển thị
+                subject_display = {
+                    "van": "Văn",
+                    "toan": "Toán", 
+                    "anh": "Tiếng Anh"
+                }
+                
+                passes_min, validated_score, error_msg = validate_minimum_score(
+                    prompt, subject_display[score_key]
+                )
+                
+                if not passes_min:
+                    # Thêm thông báo lỗi vào lịch sử
+                    add_assistant_message(error_msg)
+                    add_assistant_message("Vui lòng bắt đầu lại từ đầu. Gõ 'Bắt đầu lại' để nhập điểm mới.")
+                    
+                    # Reset về trạng thái ban đầu
+                    st.session_state.user_scores = {}
+                    st.session_state.step = "start"
+                    st.rerun()
+                else:
+                    # Điểm hợp lệ, tiếp tục
+                    st.session_state.user_scores[score_key] = score
+                    next_step, question = get_next_question()
+                    st.session_state.step = next_step
+                    add_assistant_message(question)
+            else:
+                # Các môn khác (tb_4nam) không cần kiểm tra điểm tối thiểu
+                st.session_state.user_scores[score_key] = score
+                next_step, question = get_next_question()
+                st.session_state.step = next_step
+                add_assistant_message(question)
     # Bước 5: Hỏi điểm ưu tiên
     elif current_step == "ask_uu_tien":
         is_valid, score = is_valid_score(prompt, 0.0, 5.0)
